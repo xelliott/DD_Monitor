@@ -13,6 +13,7 @@ from danmu import TextBrowser
 import vlc
 import platform
 import logging
+import Global
 
 
 header = {
@@ -285,7 +286,10 @@ class VideoWidget(QFrame):
         self.topLabel.setObjectName('frame')
         self.topLabel.setStyleSheet("background-color:#293038")
         # self.topLabel.setFixedHeight(32)
-        self.topLabel.setFont(QFont('微软雅黑', 15, QFont.Bold))
+        titleFont = Global.settings.defaultFont
+        titleFont.setPointSize(15)
+        titleFont.setWeight(QFont.Bold)
+        self.topLabel.setFont(titleFont)
         layout.addWidget(self.topLabel, 0, 0, 1, 12)
         self.topLabel.hide()
 
@@ -466,8 +470,16 @@ class VideoWidget(QFrame):
 
     def setFontSize(self, index):
         self.textSetting[6] = index
-        self.textBrowser.textBrowser.setFont(QFont('Microsoft JhengHei', index + 5, QFont.Bold))
-        self.textBrowser.transBrowser.setFont(QFont('Microsoft JhengHei', index + 5, QFont.Bold))
+        self.textBrowser.textBrowser.setFontPointSize(index+5)
+        self.textBrowser.transBrowser.setFontPointSize(index+5)
+        textCursor = self.textBrowser.textBrowser.textCursor()
+        textBlockFormat = textCursor.blockFormat()
+        textBlockFormat.setLineHeight(150, QTextBlockFormat.ProportionalHeight)  # 弹幕框行距
+        logging.info("{}".format(textBlockFormat.lineHeight()))
+        textCursor.setBlockFormat(textBlockFormat)
+        # self.textBrowser.setTextCursor(textCursor)
+        # self.textBrowser.textBrowser.setFont(QFont('Microsoft JhengHei', index + 5, QFont.Bold))
+        # self.textBrowser.transBrowser.setFont(QFont('Microsoft JhengHei', index + 5, QFont.Bold))
         self.setDanmu.emit()
 
     def resizeEvent(self, QEvent):
@@ -964,7 +976,7 @@ class VideoWidget(QFrame):
                 token = True
                 break
         if not token:
-            self.textBrowser.textBrowser.append(message + '\n')
+            self.textBrowser.textBrowser.append(message)
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Escape:

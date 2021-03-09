@@ -12,7 +12,7 @@ class Label(QLabel):
     def __init__(self, text):
         super(Label, self).__init__()
         self.setText(text)
-        self.setFont(QFont('微软雅黑', 13, QFont.Bold))
+        self.setFont(QFont('Helvetica', 13, QFont.Bold))
         self.setAlignment(Qt.AlignCenter)
         self.setStyleSheet('background-color:#4682B4')
 

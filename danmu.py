@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QLabel, QToolButton, QWidget, QComboBox, QLineEdit, 
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from CommonWidget import Slider
+import Global
 
 
 class Bar(QLabel):
@@ -91,6 +92,8 @@ class TextBrowser(QWidget):
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
+        self.font = Global.settings.defaultDanmuFont
+
         # ---- 窗体布局 ----
         layout = QGridLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -112,7 +115,7 @@ class TextBrowser(QWidget):
 
         # 弹幕区域
         self.textBrowser = QTextBrowser()
-        self.textBrowser.setFont(QFont('Microsoft JhengHei', 16, QFont.Bold))
+        self.textBrowser.setFont(self.font)
         self.textBrowser.setStyleSheet('border-width:1')
         # textCursor = self.textBrowser.textCursor()
         # textBlockFormat = QTextBlockFormat()
@@ -123,7 +126,7 @@ class TextBrowser(QWidget):
 
         # 同传区域
         self.transBrowser = QTextBrowser()
-        self.transBrowser.setFont(QFont('Microsoft JhengHei', 16, QFont.Bold))
+        self.transBrowser.setFont(self.font)
         self.transBrowser.setStyleSheet('border-width:1')
         layout.addWidget(self.transBrowser, 2, 0, 1, 10)
 

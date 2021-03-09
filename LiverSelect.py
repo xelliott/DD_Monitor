@@ -6,6 +6,7 @@ import requests, json, time, codecs, logging, os
 from PyQt5.QtWidgets import * 	# QAction,QFileDialog
 from PyQt5.QtGui import *		# QIcon,QPixmap
 from PyQt5.QtCore import * 		# QSize
+import Global
 
 
 header = {
@@ -16,7 +17,10 @@ header = {
 class CardLabel(QLabel):
     def __init__(self, text='NA', fontColor='#f1fefb', size=11):
         super(CardLabel, self).__init__()
-        self.setFont(QFont('微软雅黑', size, QFont.Bold))
+        labelFont = Global.settings.defaultFont
+        labelFont.setPointSize(size)
+        labelFont.setWeight(QFont.Bold)
+        self.setFont(labelFont)
         self.setStyleSheet('color:%s;background-color:#00000000' % fontColor)
         self.setText(text)
 
@@ -27,7 +31,10 @@ class CardLabel(QLabel):
 class OutlinedLabel(QLabel):
     def __init__(self, text='NA', fontColor='#FFFFFF', outColor='#222222', size=11):
         super().__init__()
-        self.setFont(QFont('微软雅黑', size, QFont.Bold))
+        labelFont = Global.settings.defaultFont
+        labelFont.setPointSize(size)
+        labelFont.setWeight(QFont.Bold)
+        self.setFont(labelFont)
         self.setStyleSheet('background-color:#00000000')
         self.setText(text)
         self.setBrush(fontColor)
@@ -192,7 +199,10 @@ class CoverLabel(QLabel):
 
     def __init__(self, roomID, topToken=False):
         super(CoverLabel, self).__init__()
-        QToolTip.setFont(QFont('微软雅黑', 16, QFont.Bold))
+        labelFont = Global.settings.defaultFont
+        labelFont.setPointSize(16)
+        labelFont.setWeight(QFont.Bold)
+        QToolTip.setFont(labelFont)
         self.setAcceptDrops(True)
         self.roomID = roomID
         self.topToken = topToken

@@ -23,6 +23,7 @@ import dns.resolver
 from ReportException import thraedingExceptionHandler, uncaughtExceptionHandler,\
     unraisableExceptionHandler, loggingSystemInfo
 from danmu import TextOpation, ToolButton
+import Global
 
 
 # 程序所在路径
@@ -101,7 +102,7 @@ class StartLiveWindow(QWidget):
         self.resize(240, 70)
         self.tipLabel = QLabel()
         self.tipLabel.setStyleSheet('color:#293038;background-color:#eeeeee')
-        self.tipLabel.setFont(QFont('微软雅黑', 15, QFont.Bold))
+        self.tipLabel.setFont(Global.settings.defaultPopupFont)
         layout = QGridLayout(self)
         layout.setContentsMargins(3, 3, 3, 3)
         layout.addWidget(self.tipLabel)
@@ -438,7 +439,7 @@ class MainWindow(QMainWindow):
         self.addButton = QPushButton('+')
         self.addButton.setFixedSize(160, 90)
         self.addButton.setStyleSheet('border:3px dotted #EEEEEE')
-        self.addButton.setFont(QFont('Arial', 24, QFont.Bold))
+        self.addButton.setFont(QFont('Helvetica', 24, QFont.Bold))
         progressText.setText('设置添加控制...')
         self.controlBarLayout.addWidget(self.addButton, 2, 0, 1, 4)
         progressText.setText('设置全局控制...')
@@ -616,8 +617,9 @@ class MainWindow(QMainWindow):
                     videoWidget.textBrowser.transBrowser.show()
                 videoWidget.filters = videoWidget.textSetting[5].split(' ')
                 size = videoWidget.textSetting[6]
-                videoWidget.textBrowser.textBrowser.setFont(QFont('Microsoft JhengHei', size + 5, QFont.Bold))
-                videoWidget.textBrowser.transBrowser.setFont(QFont('Microsoft JhengHei', size + 5, QFont.Bold))
+                videoWidget.setFontSize(size)
+                # videoWidget.textBrowser.textBrowser.setFont(QFont('Microsoft JhengHei', size + 5, QFont.Bold))
+                # videoWidget.textBrowser.transBrowser.setFont(QFont('Microsoft JhengHei', size + 5, QFont.Bold))
 
         self.videoWidgetList[fromID], self.videoWidgetList[toID] = toVideo, fromVideo  # 交换控件列表
         self.config['player'][toID] = fromRoomID  # 记录config
@@ -790,9 +792,10 @@ class MainWindow(QMainWindow):
 
     def setGlobalFontSize(self, index):
         for videoWidget in self.videoWidgetList + self.popVideoWidgetList:
-            videoWidget.textSetting[6] = index
-            videoWidget.textBrowser.textBrowser.setFont(QFont('Microsoft JhengHei', index + 5, QFont.Bold))
-            videoWidget.textBrowser.transBrowser.setFont(QFont('Microsoft JhengHei', index + 5, QFont.Bold))
+            videoWidget.setFontSize(index)
+            # videoWidget.textSetting[6] = index
+            # videoWidget.textBrowser.textBrowser.setFont(QFont('Microsoft JhengHei', index + 5, QFont.Bold))
+            # videoWidget.textBrowser.transBrowser.setFont(QFont('Microsoft JhengHei', index + 5, QFont.Bold))
 
     def globalQuality(self, quality):
         for videoWidget in self.videoWidgetList + self.popVideoWidgetList:
@@ -1164,7 +1167,8 @@ if __name__ == '__main__':
     with open(os.path.join(application_path, 'utils/qdark.qss'), 'r') as f:
         qss = f.read()
     app.setStyleSheet(qss)
-    app.setFont(QFont('微软雅黑', 9))
+    # app.setFont(QFont('微软雅黑', 9))
+    app.setFont(Global.settings.defaultFont)
 
     # 日志采集初始化
     log.init_log(application_path)
