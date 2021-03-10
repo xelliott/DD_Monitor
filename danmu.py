@@ -1,11 +1,13 @@
 """将弹幕机分离出来单独开发
 """
 from PyQt5.QtWidgets import QLabel, QToolButton, QWidget, QComboBox, QLineEdit, QTextBrowser, QGridLayout, QStyle
+from PyQt5.QtWidgets import QFontDialog, QPushButton
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from CommonWidget import Slider
 import Global
 
+DefaultFontOption = [50, 1, 7, 0, '【 [ {', 10, Global.settings.defaultDanmuFont]
 
 class Bar(QLabel):
     """自定义标题栏"""
@@ -32,13 +34,16 @@ class ToolButton(QToolButton):
         self.setIcon(icon)
 
 
-class TextOpation(QWidget):
+class TextOption(QWidget):
     """弹幕机选项 - 弹出式窗口"""
-    def __init__(self, setting=[50, 1, 7, 0, '【 [ {', 10]):
-        super(TextOpation, self).__init__()
+    fontSelected = pyqtSignal(QFont)
+
+    def __init__(self, setting=DefaultFontOption.copy()):
+        super(TextOption, self).__init__()
         self.resize(300, 300)
         self.setWindowTitle('弹幕窗设置')
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.font = setting[6]
 
         # ---- 窗体布局 ----
         layout = QGridLayout(self)
@@ -77,6 +82,19 @@ class TextOpation(QWidget):
         self.translateFitler.setFixedWidth(100)
         layout.addWidget(self.translateFitler, 5, 1, 1, 1)
 
+        layout.addWidget(QLabel('字体'), 6, 0, 1, 1)
+        self.chooseFontButton = QPushButton()
+        self.chooseFontButton.setText("{} {}pt".format(self.font.family(), self.font.pointSize()))
+        self.chooseFontButton.clicked.connect(lambda: self.chooseFont(self.font))
+        layout.addWidget(self.chooseFontButton, 6, 1, 1, 1)
+
+    def chooseFont(self, currentFont):
+        newFont, ok = QFontDialog.getFont(currentFont, self)
+        self.chooseFontButton.setText("{} {}pt".format(newFont.family(), newFont.pointSize()))
+        self.font = newFont
+        if ok:
+            self.fontSelected.emit(newFont)
+
 
 class TextBrowser(QWidget):
     """弹幕机 - 弹出式窗口
@@ -85,14 +103,17 @@ class TextBrowser(QWidget):
     closeSignal = pyqtSignal()
     moveSignal = pyqtSignal(QPoint)
 
+
+
     def __init__(self, parent):
         super(TextBrowser, self).__init__(parent)
-        self.optionWidget = TextOpation()
         self.setWindowTitle('弹幕机')
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
         self.font = Global.settings.defaultDanmuFont
+
+        self.optionWidget = TextOption()
 
         # ---- 窗体布局 ----
         layout = QGridLayout(self)

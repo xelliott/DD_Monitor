@@ -182,7 +182,7 @@ class VideoWidget(QFrame):
     closePopWindow = pyqtSignal(list)  # 关闭悬浮窗
 
     def __init__(self, id, volume, cacheFolder, top=False, title='', resize=[],
-                 textSetting=[True, 20, 2, 6, 0, '【 [ {', 10], maxCacheSize=2048000,
+                 textSetting=[True, 20, 2, 6, 0, '【 [ {', 10, Global.settings.defaultDanmuFont], maxCacheSize=2048000,
                  saveCachePath='', startWithDanmu=True, hardwareDecode=True):
         super(VideoWidget, self).__init__()
         self.setAcceptDrops(True)
@@ -257,6 +257,9 @@ class VideoWidget(QFrame):
         self.setFontSize(self.textSetting[6])  # 设置弹幕字体大小
         self.textBrowser.optionWidget.fontSizeCombox.setCurrentIndex(self.textSetting[6])
         self.textBrowser.optionWidget.fontSizeCombox.currentIndexChanged.connect(self.setFontSize)
+        self.setDanmuFont(self.textSetting[7])  # 设置字体
+        self.textBrowser.optionWidget.font = self.textSetting[7]
+        self.textBrowser.optionWidget.fontSelected.connect(self.setDanmuFont)
 
         self.textBrowser.closeSignal.connect(self.closeDanmu)
         self.textBrowser.moveSignal.connect(self.moveTextBrowser)
@@ -480,6 +483,12 @@ class VideoWidget(QFrame):
         # self.textBrowser.setTextCursor(textCursor)
         # self.textBrowser.textBrowser.setFont(QFont('Microsoft JhengHei', index + 5, QFont.Bold))
         # self.textBrowser.transBrowser.setFont(QFont('Microsoft JhengHei', index + 5, QFont.Bold))
+        self.setDanmu.emit()
+
+    def setDanmuFont(self, font):
+        self.textSetting[7] = font
+        self.textBrowser.textBrowser.setFont(font)
+        self.textBrowser.transBrowser.setFont(font)
         self.setDanmu.emit()
 
     def resizeEvent(self, QEvent):

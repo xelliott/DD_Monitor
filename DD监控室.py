@@ -22,7 +22,7 @@ import codecs
 import dns.resolver
 from ReportException import thraedingExceptionHandler, uncaughtExceptionHandler,\
     unraisableExceptionHandler, loggingSystemInfo
-from danmu import TextOpation, ToolButton
+from danmu import TextOption, ToolButton
 import Global
 
 
@@ -285,7 +285,7 @@ class MainWindow(QMainWindow):
                 self.config['translator'] = [True] * 9
             for index, textSetting in enumerate(self.config['danmu']):
                 if type(textSetting) == bool:
-                    self.config['danmu'][index] = [textSetting, 20, 1, 7, 0, '【 [ {']
+                    self.config['danmu'][index] = [textSetting, 20, 1, 7, 0, '【 [ {', Global.settings.defaultDanmuFont]
             if 'hardwareDecode' not in self.config:
                 self.config['hardwareDecode'] = True
             if 'maxCacheSize' not in self.config:
@@ -311,7 +311,7 @@ class MainWindow(QMainWindow):
                 'audioChannel': [0] * 9,
                 'muted': [1] * 9,
                 'volume': [50] * 9,
-                'danmu': [[True, 50, 1, 7, 0, '【 [ {', 10]] * 9,  # 显示,透明,横向,纵向,类型,同传字符,字体大小
+                'danmu': [[True, 50, 1, 7, 0, '【 [ {', 10, Global.settings.defaultDanmuFont]] * 9,  # 显示,透明,横向,纵向,类型,同传字符,字体大小
                 'globalVolume': 30,
                 'control': True,
                 'hardwareDecode': True,
@@ -405,7 +405,7 @@ class MainWindow(QMainWindow):
         self.controlBarLayout.addWidget(self.stop, 0, 2, 1, 1)
 
         # 全局弹幕设置
-        self.danmuOption = TextOpation()
+        self.danmuOption = TextOption()
         self.danmuOption.setWindowTitle('全局弹幕窗设置')
         self.danmuOption.opacitySlider.value.connect(self.setGlobalDanmuOpacity)
         self.danmuOption.horizontalCombobox.currentIndexChanged.connect(self.setGlobalHorizontalPercent)
