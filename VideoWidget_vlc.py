@@ -181,10 +181,10 @@ class VideoWidget(QFrame):
     muteExceptKey = pyqtSignal()  # 除了这个播放器 其他全部静音快捷键
     closePopWindow = pyqtSignal(list)  # 关闭悬浮窗
 
-    def __init__(self, id, volume, cacheFolder, top=False, title='', resize=[],
+    def __init__(self, parent, id, volume, cacheFolder, top=False, title='', resize=[],
                  textSetting=[True, 20, 2, 6, 0, '【 [ {', Global.settings.defaultDanmuFont.toString()], maxCacheSize=2048000,
                  saveCachePath='', startWithDanmu=True, hardwareDecode=True):
-        super(VideoWidget, self).__init__()
+        super(VideoWidget, self).__init__(parent)
         self.setAcceptDrops(True)
         self.installEventFilter(self)
         self.id = id
@@ -238,7 +238,10 @@ class VideoWidget(QFrame):
         layout.setContentsMargins(0, 0, 0, 0)
 
         # ---- 弹幕机 ----
-        self.textBrowser = TextBrowser(self)  # 必须赶在resizeEvent和moveEvent之前初始化textbrowser
+        if top:
+            self.textBrowser = TextBrowser(self)  # 必须赶在resizeEvent和moveEvent之前初始化textbrowser
+        else:
+            self.textBrowser = TextBrowser(parent)  # 必须赶在resizeEvent和moveEvent之前初始化textbrowser
         self.setDanmuOpacity(self.textSetting[1])  # 设置弹幕透明度
         self.textBrowser.optionWidget.opacitySlider.setValue(self.textSetting[1])  # 设置选项页透明条
         self.textBrowser.optionWidget.opacitySlider.value.connect(self.setDanmuOpacity)
@@ -264,6 +267,10 @@ class VideoWidget(QFrame):
         self.textBrowser.moveSignal.connect(self.moveTextBrowser)
         if not self.startWithDanmu: # 如果启动隐藏被设置，隐藏弹幕机
             self.textSetting[0] = False
+            self.textBrowser.hide()
+        if self.textSetting[0]:
+            self.textBrowser.show()
+        else:
             self.textBrowser.hide()
 
         self.textPosDelta = QPoint(0, 0)  # 弹幕框和窗口之间的坐标差

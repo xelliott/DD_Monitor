@@ -1,6 +1,6 @@
 """将弹幕机分离出来单独开发
 """
-from PyQt5.QtWidgets import QLabel, QToolButton, QWidget, QComboBox, QLineEdit, QTextBrowser, QGridLayout, QStyle
+from PyQt5.QtWidgets import QLabel, QToolButton, QWidget, QComboBox, QLineEdit, QTextBrowser, QGridLayout, QStyle, QDialog
 from PyQt5.QtWidgets import QFontDialog, QPushButton
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint
@@ -34,12 +34,12 @@ class ToolButton(QToolButton):
         self.setIcon(icon)
 
 
-class TextOption(QWidget):
+class TextOption(QDialog):
     """弹幕机选项 - 弹出式窗口"""
     fontSelected = pyqtSignal(str)
 
-    def __init__(self, setting=None):
-        super(TextOption, self).__init__()
+    def __init__(self, parent, setting=None):
+        super(TextOption, self).__init__(parent)
         if setting is None:
             setting = [50, 1, 7, 0, '【 [ {', 10]
 
@@ -103,7 +103,7 @@ class TextOption(QWidget):
 
 
 
-class TextBrowser(QWidget):
+class TextBrowser(QDialog):
     """弹幕机 - 弹出式窗口
     通过限制移动位置来模拟嵌入式窗口
     """
@@ -113,14 +113,14 @@ class TextBrowser(QWidget):
 
 
     def __init__(self, parent):
-        super(TextBrowser, self).__init__(parent)
+        super(TextBrowser, self).__init__(parent, Qt.WindowFlags(Qt.FramelessWindowHint))
         self.setWindowTitle('弹幕机')
-        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
+        # self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
         self.font = Global.settings.defaultDanmuFont
 
-        self.optionWidget = TextOption()
+        self.optionWidget = TextOption(parent)
 
         # ---- 窗体布局 ----
         layout = QGridLayout(self)
@@ -157,6 +157,8 @@ class TextBrowser(QWidget):
         self.transBrowser.setFont(self.font)
         self.transBrowser.setStyleSheet('border-width:1')
         layout.addWidget(self.transBrowser, 2, 0, 1, 10)
+
+        self.hide()
 
     def userClose(self):
         self.hide()

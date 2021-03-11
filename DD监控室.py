@@ -117,12 +117,12 @@ class StartLiveWindow(QWidget):
         self.hideTimer.stop()
 
 
-class CacheSetting(QWidget):
+class CacheSetting(QDialog):
     """缓存设置窗口"""
     setting = pyqtSignal(list)
 
-    def __init__(self):
-        super(CacheSetting, self).__init__()
+    def __init__(self, parent):
+        super(CacheSetting, self).__init__(parent)
         self.resize(400, 200)
         self.setWindowTitle('缓存设置')
         layout = QGridLayout(self)
@@ -336,7 +336,7 @@ class MainWindow(QMainWindow):
         self.layoutSettingPanel = LayoutSettingPanel()
         self.layoutSettingPanel.layoutConfig.connect(self.changeLayout)
         self.version = Version()
-        self.cacheSetting = CacheSetting()
+        self.cacheSetting = CacheSetting(self)
         self.cacheSetting.maxCacheEdit.setText(str(self.config['maxCacheSize'] // 1024000))
         self.cacheSetting.savePathEdit.setText(self.config['saveCachePath'])
         self.cacheSetting.setting.connect(self.setCache)
@@ -352,7 +352,7 @@ class MainWindow(QMainWindow):
         for i in range(9):
             volume = self.config['volume'][i]
             progressText.setText('设置第%s个主层播放器...' % str(i + 1))
-            self.videoWidgetList.append(VideoWidget(i, volume, cacheFolder, textSetting=self.config['danmu'][i],
+            self.videoWidgetList.append(VideoWidget(self, i, volume, cacheFolder, textSetting=self.config['danmu'][i],
                                                     maxCacheSize = self.config['maxCacheSize'],
                                                     saveCachePath = self.config['saveCachePath'],
                                                     startWithDanmu=self.config['startWithDanmu'],
@@ -376,7 +376,7 @@ class MainWindow(QMainWindow):
             self.videoWidgetList[i].slider.setValue(self.config['volume'][i])
             self.videoWidgetList[i].quality = self.config['quality'][i]
             self.videoWidgetList[i].audioChannel = self.config['audioChannel'][i]
-            self.popVideoWidgetList.append(VideoWidget(i + 9, volume, cacheFolder, True, '悬浮窗', [1280, 720],
+            self.popVideoWidgetList.append(VideoWidget(self, i + 9, volume, cacheFolder, True, '悬浮窗', [1280, 720],
                                                        maxCacheSize=self.config['maxCacheSize'],
                                                        saveCachePath = self.config['saveCachePath'],
                                                        startWithDanmu=self.config['startWithDanmu'],
@@ -409,7 +409,7 @@ class MainWindow(QMainWindow):
         self.controlBarLayout.addWidget(self.stop, 0, 2, 1, 1)
 
         # 全局弹幕设置
-        self.danmuOption = TextOption()
+        self.danmuOption = TextOption(self)
         self.danmuOption.setWindowTitle('全局弹幕窗设置')
         self.danmuOption.opacitySlider.value.connect(self.setGlobalDanmuOpacity)
         self.danmuOption.horizontalCombobox.currentIndexChanged.connect(self.setGlobalHorizontalPercent)
@@ -421,6 +421,7 @@ class MainWindow(QMainWindow):
         icon = QIcon()
         icon.addFile(os.path.join(application_path, 'utils/danmu.png'))
         self.danmuButton = ControlButton(icon)
+        self.danmuOption.hide()
         self.danmuButton.clicked.connect(self.danmuOption.show)
         # self.danmuButton = PushButton(text='弹')
         # self.globalDanmuToken = True
@@ -441,7 +442,7 @@ class MainWindow(QMainWindow):
 
         # 添加主播按钮
         self.addButton = QPushButton('+')
-        self.addButton.setFixedSize(160, 90)
+        # self.addButton.setFixedSize(160, 90)
         self.addButton.setStyleSheet('border:3px dotted #EEEEEE')
         self.addButton.setFont(QFont('Helvetica', 24, QFont.Bold))
         progressText.setText('设置添加控制...')
@@ -1210,5 +1211,9 @@ if __name__ == '__main__':
     mainWindow = MainWindow(cacheFolder, progressBar, progressText)
     mainWindow.showMaximized()
     mainWindow.show()
+    for videoWidget in mainWindow.videoWidgetList:
+        videoWidget.textBrowser.hide()
+    for videoWidget in mainWindow.popVideoWidgetList:
+        videoWidget.textBrowser.hide()
     splash.hide()
     sys.exit(app.exec_())
