@@ -10,6 +10,7 @@ import log
 import ctypes
 
 import os, sys, json, time, shutil, logging,platform, threading
+import qdarkstyle
 from PyQt5.QtWidgets import * 	# QAction,QFileDialog
 from PyQt5.QtGui import *		# QIcon,QPixmap
 from PyQt5.QtCore import * 		# QSize
@@ -22,7 +23,8 @@ import codecs
 import dns.resolver
 from ReportException import thraedingExceptionHandler, uncaughtExceptionHandler,\
     unraisableExceptionHandler, loggingSystemInfo
-from danmu import TextOption, ToolButton
+from danmu import TextOption
+from CommonWidget import ToolButton as ControlButton
 import Global
 
 
@@ -396,13 +398,13 @@ class MainWindow(QMainWindow):
         self.controlDock.setWidget(self.controlWidget)
         self.controlBarLayout = QGridLayout(self.controlWidget)
         self.globalPlayToken = True
-        self.play = PushButton(self.style().standardIcon(QStyle.SP_MediaPause))
+        self.play = ControlButton(self.style().standardIcon(QStyle.SP_MediaPause))
         self.play.clicked.connect(self.globalMediaPlay)
         self.controlBarLayout.addWidget(self.play, 0, 0, 1, 1)
-        self.reload = PushButton(self.style().standardIcon(QStyle.SP_BrowserReload))
+        self.reload = ControlButton(self.style().standardIcon(QStyle.SP_BrowserReload))
         self.reload.clicked.connect(self.globalMediaReload)
         self.controlBarLayout.addWidget(self.reload, 0, 1, 1, 1)
-        self.stop = PushButton(self.style().standardIcon(QStyle.SP_DialogCancelButton))
+        self.stop = ControlButton(self.style().standardIcon(QStyle.SP_DialogCancelButton))
         self.stop.clicked.connect(self.globalMediaStop)
         self.controlBarLayout.addWidget(self.stop, 0, 2, 1, 1)
 
@@ -416,10 +418,9 @@ class MainWindow(QMainWindow):
         self.danmuOption.translateFitler.textChanged.connect(self.setGlobalTranslateFilter)
         # self.danmuOption.fontSizeCombox.currentIndexChanged.connect(self.setGlobalFontSize)
         self.danmuOption.fontSelected.connect(self.setGlobalDanmuFont)
-        # self.danmuButton = ToolButton(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
         icon = QIcon()
         icon.addFile(os.path.join(application_path, 'utils/danmu.png'))
-        self.danmuButton = PushButton(icon)
+        self.danmuButton = ControlButton(icon)
         self.danmuButton.clicked.connect(self.danmuOption.show)
         # self.danmuButton = PushButton(text='弹')
         # self.globalDanmuToken = True
@@ -428,7 +429,7 @@ class MainWindow(QMainWindow):
 
         # 全局静音
         self.globalMuteToken = False
-        self.volumeButton = PushButton(self.style().standardIcon(QStyle.SP_MediaVolume))
+        self.volumeButton = ControlButton(self.style().standardIcon(QStyle.SP_MediaVolume))
         self.volumeButton.clicked.connect(self.globalMediaMute)
         self.controlBarLayout.addWidget(self.volumeButton, 1, 0, 1, 1)
         # 全局音量滑条
@@ -476,7 +477,7 @@ class MainWindow(QMainWindow):
         self.controlBarLayoutToken = self.config['control']
         layoutConfigAction = QAction('布局方式', self, triggered=self.openLayoutSetting)
         self.optionMenu.addAction(layoutConfigAction)
-        globalQualityMenu = self.optionMenu.addMenu('全局画质 ►')
+        globalQualityMenu = self.optionMenu.addMenu('全局画质')
         originQualityAction = QAction('原画', self, triggered=lambda: self.globalQuality(10000))
         globalQualityMenu.addAction(originQualityAction)
         bluerayQualityAction = QAction('蓝光', self, triggered=lambda: self.globalQuality(400))
@@ -485,17 +486,17 @@ class MainWindow(QMainWindow):
         globalQualityMenu.addAction(highQualityAction)
         lowQualityAction = QAction('流畅', self, triggered=lambda: self.globalQuality(80))
         globalQualityMenu.addAction(lowQualityAction)
-        globalAudioMenu = self.optionMenu.addMenu('全局音效 ►')
+        globalAudioMenu = self.optionMenu.addMenu('全局音效')
         audioOriginAction = QAction('原始音效', self, triggered=lambda: self.globalAudioChannel(0))
         globalAudioMenu.addAction(audioOriginAction)
         audioDolbysAction = QAction('杜比音效', self, triggered=lambda: self.globalAudioChannel(5))
         globalAudioMenu.addAction(audioDolbysAction)
-        hardDecodeMenu = self.optionMenu.addMenu('解码方案 ►')
+        hardDecodeMenu = self.optionMenu.addMenu('解码方案')
         hardDecodeAction = QAction('硬解', self, triggered=lambda: self.setDecode(True))
         hardDecodeMenu.addAction(hardDecodeAction)
         softDecodeAction = QAction('软解', self, triggered=lambda: self.setDecode(False))
         hardDecodeMenu.addAction(softDecodeAction)
-        startLiveSetting = self.optionMenu.addMenu('开播提醒 ►')
+        startLiveSetting = self.optionMenu.addMenu('开播提醒')
         enableStartLive = QAction('打开', self, triggered=lambda: self.setStartLive(True))
         startLiveSetting.addAction(enableStartLive)
         disableStartLive = QAction('关闭', self, triggered=lambda: self.setStartLive(False))
@@ -521,7 +522,7 @@ class MainWindow(QMainWindow):
         self.versionMenu.addAction(hotKeyAction)
         versionAction = QAction('检查版本', self, triggered=self.openVersion)
         self.versionMenu.addAction(versionAction)
-        otherDDMenu = self.versionMenu.addMenu('其他DD系列工具 ►')
+        otherDDMenu = self.versionMenu.addMenu('其他DD系列工具')
         DDSubtitleAction = QAction('DD烤肉机', self, triggered=self.openDDSubtitle)
         otherDDMenu.addAction(DDSubtitleAction)
         DDThanksAction = QAction('DD答谢机', self, triggered=self.openDDThanks)
@@ -1173,9 +1174,10 @@ if __name__ == '__main__':
     # 应用qss
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
-    with open(os.path.join(application_path, 'utils/qdark.qss'), 'r') as f:
-        qss = f.read()
-    app.setStyleSheet(qss)
+    app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5'))
+    # with open(os.path.join(application_path, 'utils/qdark.qss'), 'r') as f:
+    #     qss = f.read()
+    # app.setStyleSheet(qss)
     # app.setFont(QFont('微软雅黑', 9))
     app.setFont(Global.settings.defaultFont)
 

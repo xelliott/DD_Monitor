@@ -335,7 +335,7 @@ class CoverLabel(QLabel):
             drag.exec_()
         elif QMouseEvent.button() == Qt.RightButton:
             menu = QMenu()
-            addTo = menu.addMenu('添加至窗口 ►')
+            addTo = menu.addMenu('添加至窗口')
             addWindow = []
             for win in range(1, 10):
                 addWindow.append(addTo.addAction('窗口%s' % win))
@@ -530,7 +530,7 @@ class HotLiverTable(QTableWidget):
 
     def contextMenuEvent(self, event):
         self.menu = QMenu(self)
-        addTo = self.menu.addMenu('添加至窗口 ►')
+        addTo = self.menu.addMenu('添加至窗口')
         addWindow = []
         for win in range(1, 10):
             addWindow.append(addTo.addAction('窗口%s' % win))

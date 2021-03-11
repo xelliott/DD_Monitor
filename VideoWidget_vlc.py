@@ -586,7 +586,7 @@ class VideoWidget(QFrame):
         menu = QMenu()
         exportCache = menu.addAction('导出视频缓存')
         openBrowser = menu.addAction('打开直播间')
-        chooseQuality = menu.addMenu('选择画质 ►')
+        chooseQuality = menu.addMenu('选择画质')
         originQuality = chooseQuality.addAction('原画')
         if self.quality == 10000:
             originQuality.setIcon(self.style().standardIcon(QStyle.SP_DialogApplyButton))
@@ -599,14 +599,14 @@ class VideoWidget(QFrame):
         lowQuality = chooseQuality.addAction('流畅')
         if self.quality == 80:
             lowQuality.setIcon(self.style().standardIcon(QStyle.SP_DialogApplyButton))
-        chooseAudioChannel = menu.addMenu('选择音效 ►')
+        chooseAudioChannel = menu.addMenu('选择音效')
         chooseAudioOrigin = chooseAudioChannel.addAction('原始音效')
         if self.audioChannel == 0:
             chooseAudioOrigin.setIcon(self.style().standardIcon(QStyle.SP_DialogApplyButton))
         chooseAudioDolbys = chooseAudioChannel.addAction('杜比音效')
         if self.audioChannel == 5:
             chooseAudioDolbys.setIcon(self.style().standardIcon(QStyle.SP_DialogApplyButton))
-        chooseAmplify = menu.addMenu('音量增大 ►')
+        chooseAmplify = menu.addMenu('音量增大')
         chooseAmp_0_5 = chooseAmplify.addAction('x 0.5')
         if self.volumeAmplify == 0.5:
             chooseAmp_0_5.setIcon(self.style().standardIcon(QStyle.SP_DialogApplyButton))
@@ -629,7 +629,7 @@ class VideoWidget(QFrame):
         if not self.top:  # 非弹出类悬浮窗
             popWindow = menu.addAction('悬浮窗播放')
         else:  # 弹出的悬浮窗
-            opacityMenu = menu.addMenu('调节透明度 ►')
+            opacityMenu = menu.addMenu('调节透明度')
             percent100 = opacityMenu.addAction('100%')
             if self.opacity == 100:
                 percent100.setIcon(self.style().standardIcon(QStyle.SP_DialogApplyButton))

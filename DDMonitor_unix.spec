@@ -9,7 +9,6 @@ a = Analysis(['DD监控室.py'],
              datas=[
                 ('utils/ascii.txt', '.'),
                 ('utils/help.html', '.'),
-                ('utils/qdark.qss', 'utils'),
                 ('utils/splash.jpg', 'utils'),
                 ('utils/vtb.csv', 'utils'),
                 ('scripts/run.sh', '.'),

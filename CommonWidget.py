@@ -2,7 +2,7 @@
 """一些公用的组件
 """
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QSlider
+from PyQt5.QtWidgets import QSlider, QToolButton
 
 
 class Slider(QSlider):
@@ -30,3 +30,12 @@ class Slider(QSlider):
         elif value < 0: value = 0
         self.setValue(value)
         self.value.emit(value)
+
+class ToolButton(QToolButton):
+    """图标按钮"""
+    def __init__(self, icon, text=None):
+        super(ToolButton, self).__init__()
+        # self.setStyleSheet('background-color:#00000000')
+        self.setIcon(icon)
+        if text is not None:
+            self.setToolTip(text)
