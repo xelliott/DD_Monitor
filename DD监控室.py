@@ -285,7 +285,7 @@ class MainWindow(QMainWindow):
                 self.config['translator'] = [True] * 9
             for index, textSetting in enumerate(self.config['danmu']):
                 if type(textSetting) == bool:
-                    self.config['danmu'][index] = [textSetting, 20, 1, 7, 0, '【 [ {', Global.settings.defaultDanmuFont]
+                    self.config['danmu'][index] = [textSetting, 20, 1, 7, 0, '【 [ {', Global.settings.defaultDanmuFont.toString()]
             if 'hardwareDecode' not in self.config:
                 self.config['hardwareDecode'] = True
             if 'maxCacheSize' not in self.config:
@@ -301,7 +301,9 @@ class MainWindow(QMainWindow):
                 self.config['showStartLive'] = True
             for danmuConfig in self.config['danmu']:
                 if len(danmuConfig) == 6:
-                    danmuConfig.append(10)
+                    danmuConfig.append(Global.settings.defaultDanmuFont.toString())
+                if isinstance(danmuConfig[6], int):
+                    danmuConfig[6] = Global.settings.defaultDanmuFont.toString()
         else:  # 默认和备份 json 配置均读取失败
             self.config = {
                 'roomid': {'21396545': False, '21402309': False, '22384516': False, '8792912': False},  # 置顶显示
@@ -311,7 +313,7 @@ class MainWindow(QMainWindow):
                 'audioChannel': [0] * 9,
                 'muted': [1] * 9,
                 'volume': [50] * 9,
-                'danmu': [[True, 50, 1, 7, 0, '【 [ {', 10, Global.settings.defaultDanmuFont]] * 9,  # 显示,透明,横向,纵向,类型,同传字符,字体大小
+                'danmu': [[True, 50, 1, 7, 0, '【 [ {', Global.settings.defaultDanmuFont.toString()]] * 9,  # 显示,透明,横向,纵向,类型,同传字符,字体
                 'globalVolume': 30,
                 'control': True,
                 'hardwareDecode': True,
@@ -412,7 +414,8 @@ class MainWindow(QMainWindow):
         self.danmuOption.verticalCombobox.currentIndexChanged.connect(self.setGlobalVerticalPercent)
         self.danmuOption.translateCombobox.currentIndexChanged.connect(self.setGlobalTranslateBrowser)
         self.danmuOption.translateFitler.textChanged.connect(self.setGlobalTranslateFilter)
-        self.danmuOption.fontSizeCombox.currentIndexChanged.connect(self.setGlobalFontSize)
+        # self.danmuOption.fontSizeCombox.currentIndexChanged.connect(self.setGlobalFontSize)
+        self.danmuOption.fontSelected.connect(self.setGlobalDanmuFont)
         # self.danmuButton = ToolButton(self.style().standardIcon(QStyle.SP_FileDialogDetailedView))
         icon = QIcon()
         icon.addFile(os.path.join(application_path, 'utils/danmu.png'))
@@ -797,6 +800,10 @@ class MainWindow(QMainWindow):
             # videoWidget.textBrowser.textBrowser.setFont(QFont('Microsoft JhengHei', index + 5, QFont.Bold))
             # videoWidget.textBrowser.transBrowser.setFont(QFont('Microsoft JhengHei', index + 5, QFont.Bold))
 
+    def setGlobalDanmuFont(self, font):
+        for videoWidget in self.videoWidgetList + self.popVideoWidgetList:
+            videoWidget.setDanmuFont(font)
+
     def globalQuality(self, quality):
         for videoWidget in self.videoWidgetList + self.popVideoWidgetList:
             if not videoWidget.isHidden():  # 窗口没有被隐藏
@@ -1078,7 +1085,9 @@ class MainWindow(QMainWindow):
                         self.config['showStartLive'] = True
                     for danmuConfig in self.config['danmu']:
                         if len(danmuConfig) == 6:
-                            danmuConfig.append(10)
+                            danmuConfig.append(Global.settings.defaultDanmuFont.toString())
+                        if isinstance(danmuConfig[6], int):
+                            danmuConfig[6] = Global.settings.defaultDanmuFont.toString()
                     self.liverPanel.addLiverRoomList(self.config['roomid'])
                     QMessageBox.information(self, '导入预设', '导入完成', QMessageBox.Ok)
 

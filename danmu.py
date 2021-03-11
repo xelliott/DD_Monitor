@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt, pyqtSignal, QPoint
 from CommonWidget import Slider
 import Global
 
-DefaultFontOption = [50, 1, 7, 0, '【 [ {', 10, Global.settings.defaultDanmuFont]
+DefaultFontOption = [50, 1, 7, 0, '【 [ {', 10, Global.settings.defaultDanmuFont.toString()]
 
 class Bar(QLabel):
     """自定义标题栏"""
@@ -36,22 +36,31 @@ class ToolButton(QToolButton):
 
 class TextOption(QWidget):
     """弹幕机选项 - 弹出式窗口"""
-    fontSelected = pyqtSignal(QFont)
+    fontSelected = pyqtSignal(str)
 
-    def __init__(self, setting=DefaultFontOption.copy()):
+    def __init__(self, setting=None):
         super(TextOption, self).__init__()
+        if setting is None:
+            setting = [50, 1, 7, 0, '【 [ {', 10]
+
         self.resize(300, 300)
         self.setWindowTitle('弹幕窗设置')
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.font = setting[6]
+        self.font = Global.settings.defaultDanmuFont
 
         # ---- 窗体布局 ----
         layout = QGridLayout(self)
-        layout.addWidget(QLabel('字体大小'), 0, 0, 1, 1)
-        self.fontSizeCombox = QComboBox()
-        self.fontSizeCombox.addItems([str(i) for i in range(5, 26)])
-        self.fontSizeCombox.setCurrentIndex(setting[5])
-        layout.addWidget(self.fontSizeCombox, 0, 1, 1, 1)
+        layout.addWidget(QLabel('字体'), 0, 0, 1, 1)
+        self.chooseFontButton = QPushButton()
+        self.chooseFontButton.setText("{} {}pt".format(self.font.family(), self.font.pointSize()))
+        self.chooseFontButton.clicked.connect(lambda: self.chooseFont(self.font))
+        layout.addWidget(self.chooseFontButton, 0, 1, 1, 1)
+
+        # layout.addWidget(QLabel('字体大小'), 0, 0, 1, 1)
+        # self.fontSizeCombox = QComboBox()
+        # self.fontSizeCombox.addItems([str(i) for i in range(5, 26)])
+        # self.fontSizeCombox.setCurrentIndex(setting[5])
+        # layout.addWidget(self.fontSizeCombox, 0, 1, 1, 1)
 
         layout.addWidget(QLabel('窗体透明度'), 1, 0, 1, 1)
         self.opacitySlider = Slider()
@@ -82,18 +91,16 @@ class TextOption(QWidget):
         self.translateFitler.setFixedWidth(100)
         layout.addWidget(self.translateFitler, 5, 1, 1, 1)
 
-        layout.addWidget(QLabel('字体'), 6, 0, 1, 1)
-        self.chooseFontButton = QPushButton()
-        self.chooseFontButton.setText("{} {}pt".format(self.font.family(), self.font.pointSize()))
-        self.chooseFontButton.clicked.connect(lambda: self.chooseFont(self.font))
-        layout.addWidget(self.chooseFontButton, 6, 1, 1, 1)
-
     def chooseFont(self, currentFont):
         newFont, ok = QFontDialog.getFont(currentFont, self)
+        if ok:
+            self.changeFontLabel(newFont)
+            self.fontSelected.emit(newFont.toString())
+
+    def changeFontLabel(self, newFont):
         self.chooseFontButton.setText("{} {}pt".format(newFont.family(), newFont.pointSize()))
         self.font = newFont
-        if ok:
-            self.fontSelected.emit(newFont)
+
 
 
 class TextBrowser(QWidget):
